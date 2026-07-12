@@ -1,0 +1,12 @@
+[Unit]
+Description=r7: seed BlueZ board-address from EFS bt_addr (exynos9810)
+Before=bluetooth.service
+ConditionPathExists=/mnt/vendor/efs/bluetooth/bt_addr
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/bin/droid/droid-get-bt-address.sh
+
+[Install]
+WantedBy=bluetooth.service

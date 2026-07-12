@@ -1,0 +1,13 @@
+=== uname ===
+Linux SM-N770F 4.9.191-samsung-r7 #1 SMP PREEMPT Thu Jul 9 14:38:55 UTC 2026 aarch64 GNU/Linux
+=== os-release ===
+PRETTY_NAME="Droidian 102 (2026-05-28)"
+=== uptime ===
+ 22:43:19 up 17 min,  2 users,  load average: 11.09, 12.10, 8.75
+=== failed units ===
+● NetworkManager-wait-online.service loaded failed failed Network Manager Wait Online
+=== phosh/phoc ===
+active
+=== wifi ip ===
+=== container ===
+active

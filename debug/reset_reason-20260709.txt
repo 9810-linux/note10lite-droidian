@@ -1,0 +1,41 @@
+26/07/08 14:37:55
+reason :  (uid: 0 pid: 26419 processName: app_process)
+java.lang.Exception: It is not an exception!! just save the trace for process which called shutdown thread!! ShutdownThread.shutdown
+	at com.android.server.power.ShutdownThread.shutdownInner(ShutdownThread.java:344)
+	at com.android.server.power.ShutdownThread.reboot(ShutdownThread.java:444)
+	at com.android.server.power.PowerManagerService$2.run(PowerManagerService.java:6072)
+	at android.os.Handler.handleCallback(Handler.java:942)
+	at android.os.Handler.dispatchMessage(Handler.java:99)
+	at android.os.Looper.loopOnce(Looper.java:226)
+	at android.os.Looper.loop(Looper.java:313)
+	at android.os.HandlerThread.run(HandlerThread.java:67)
+	at com.android.server.ServiceThread.run(ServiceThread.java:44)
+	at com.android.server.UiThread.run(UiThread.java:52)
+14:38:00  2026-07-08 14:38:00+0700 |  REBOOT  |       | REASON:  (uid: 0 pid: 26419 processName: app_process)
+14:38:00  terminating init service start
+14:38:01  terminating init service end
+14:38:01  volume shutdown start
+14:38:02  volume shutdown end
+2026-07-08 14:41:02+0700 |    ON    | RP    | N770FXXS9HXA3 / OFFSRC: - / ONSRC: ACOKB / RSTSTAT: SWRESET [188]/ apex_updated 
+
+18:03:09  2026-07-08 18:03:09+0700 |  REBOOT  |       | REASON: download
+18:03:09  terminating init service start
+18:03:10  terminating init service end
+18:03:10  volume shutdown start
+18:03:11  volume shutdown end
+2026-07-08 19:29:06+0700 |    ON    | RP    | N770FXXS9HXA3 / OFFSRC: - / ONSRC: - / RSTSTAT: - [198]
+
+12:30:55  2026-07-09 12:30:55+0700 |  REBOOT  |       | REASON: download
+12:30:55  terminating init service start
+12:30:57  terminating init service end
+12:30:57  volume shutdown start
+12:30:57  volume shutdown end
+2026-07-09 12:41:48+0700 |    ON    | RP    | N770FXXS9HXA3 / OFFSRC: - / ONSRC: - / RSTSTAT: - [208]
+
+14:51:49  2026-07-09 14:51:49+0700 |  REBOOT  |       | REASON: download
+14:51:49  terminating init service start
+14:51:50  terminating init service end
+14:51:50  volume shutdown start
+14:51:51  volume shutdown end
+2026-07-09 15:49:46+0700 |    ON    | RP    | N770FXXS9HXA3 / OFFSRC: - / ONSRC: - / RSTSTAT: - [219]
+

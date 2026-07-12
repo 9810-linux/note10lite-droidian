@@ -1,0 +1,21 @@
+# Droidian track — never commit large blobs or cloned reference repos
+# (track ini berbagi aset dengan ../r7-mainline ; lihat PROGRESS.md)
+firmware/
+ref/
+*.img
+*.zip
+*.tar
+*.tar.md5
+*.dtb
+*.bin
+*.cpio
+*.cpio.gz
+*.ko
+Image
+vmlinux
+initramfs/init
+initramfs/ramdisk.cpio.gz
+initramfs/initrd.img-halium-generic
+boot/r7-stock-dttable.bin
+# build output (kernel image, dtb) — regenerated
+out/

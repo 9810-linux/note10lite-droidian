@@ -1,0 +1,15 @@
+[Unit]
+Description=r7: start Android container audio HAL (register IDevicesFactory)
+After=lxc@android.service android-mount.service
+Wants=lxc@android.service
+ConditionPathExists=/vendor/bin/hw/android.hardware.audio.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/local/sbin/r7-start-audio-hal.sh
+# once the HAL is up, kick the graphical user's pulseaudio so module-droid-card loads
+ExecStartPost=-/bin/sh -c 'runuser -u droidian -- env XDG_RUNTIME_DIR=/run/user/32011 DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/32011/bus systemctl --user reset-failed pulseaudio; runuser -u droidian -- env XDG_RUNTIME_DIR=/run/user/32011 DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/32011/bus systemctl --user restart pulseaudio'
+
+[Install]
+WantedBy=multi-user.target

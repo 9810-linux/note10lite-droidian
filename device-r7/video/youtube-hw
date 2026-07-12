@@ -1,0 +1,51 @@
+#!/bin/sh
+# youtube-hw — play a YouTube (or any yt-dlp-supported) video with HARDWARE decode
+# via Clapper (Exynos MFC / droidvdec), up to 720p60 WITH audio.
+#
+# Why the FIFO: YouTube 60fps is served as SEPARATE video-only + audio-only DASH
+# streams, and Clapper takes a single URI. So we let yt-dlp/ffmpeg mux the chosen
+# video+audio on the fly into a FIFO, and hand Clapper that FIFO — keeping Clapper's
+# working GTK4-GL display path + droidvdec HW decode, now at 60fps with sound.
+#
+# Usage:
+#   youtube-hw <url>     play the URL
+#   youtube-hw           play the URL in the Wayland clipboard (copy a link first)
+#   YT_MAXH=1080 youtube-hw <url>   allow up to 1080p60 (heavier; 720 is the default)
+#
+# Launch from the Phosh app grid so it inherits the session hybris-GL env
+# (GDK_GL=gles, GST_GL_API=gles2, libglesshadercache preload, …). Needs: yt-dlp,
+# ffmpeg, clapper, wl-clipboard.
+
+set -u
+
+URL="${1:-}"
+[ -z "$URL" ] && URL="$(wl-paste 2>/dev/null | head -1)"
+
+case "$URL" in
+    http://*|https://*) ;;
+    *)
+        notify-send -i clapper "YouTube (HW)" "No video link found.\nCopy a YouTube link in your browser first, then tap this again."
+        exit 1
+        ;;
+esac
+
+# Prefer H.264 (most reliable on droidvdec), then VP9, then anything; cap height so
+# 60fps stays smooth on-device. Same-res, yt-dlp prefers the higher fps (=> 60fps).
+H="${YT_MAXH:-720}"
+FMT="bv*[height<=${H}][vcodec^=avc1]+ba/bv*[height<=${H}][vcodec^=vp9]+ba/bv*[height<=${H}]+ba/22/18/best[height<=${H}]/best"
+
+FIFO="$(mktemp -u /tmp/youtube-hw.XXXXXX).mkv"
+mkfifo "$FIFO" 2>/dev/null || { notify-send -i clapper "YouTube (HW)" "Could not create pipe."; exit 1; }
+
+YTPID=""
+cleanup() { [ -n "$YTPID" ] && kill "$YTPID" 2>/dev/null; rm -f "$FIFO"; }
+trap cleanup EXIT INT TERM
+
+notify-send -i clapper "YouTube (HW)" "Loading with hardware decode…"
+
+# Mux chosen video+audio to the FIFO as streamable Matroska.
+yt-dlp --no-warnings -f "$FMT" --merge-output-format mkv -o - "$URL" > "$FIFO" 2>/dev/null &
+YTPID=$!
+
+clapper "file://$FIFO"
+# cleanup runs via trap on exit
