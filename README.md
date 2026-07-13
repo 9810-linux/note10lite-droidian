@@ -11,12 +11,14 @@ units, config), not the rootfs image.
 ## What works
 Display · touchscreen · Phosh shell · PIN login · WiFi · Settings · charging ·
 display scaling · on-screen keyboard · on-device terminal · **audio (speaker)** ·
-**hardware video decode** (Clapper / `droidvdec`, Exynos MFC).
+**hardware video decode** (Clapper / `droidvdec`, Exynos MFC) ·
+**YouTube 1080p60 in Chromium** (SW decode, smooth on stock scaling — see
+`device-r7/video/README.md` for the 3-part recipe).
 
 ## Known-broken (expected)
 - **Bluetooth** — `af_bluetooth.c:69` `BUG_ON` panic; masked in userspace (kernel-rebuild fix pending).
 - **Camera** — `fimc_is` `QUERYCAP` NULL-deref panics on any camera V4L2 node; blocked via udev.
-- **Browser video is fragile** — the reliable smooth path is the `youtube-hw` app (Clapper); Chromium 1080p60 can crash the GPU.
+- **Browsers can't reach the HW video decoder** (no VA-API/usable V4L2 on the 4.9 kernel) — browser video is SW-decoded; runs hot on long sessions. Epiphany crashes on YouTube (WebKit MSE).
 
 ## Layout
 | Path | What |
