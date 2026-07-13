@@ -1,14 +1,32 @@
-# Droidian boot status — SM-N770F (r7) — RESUME HERE (sesi-15, 2026-07-09)
+# Droidian boot status — SM-N770F (r7) — RESUME HERE (sesi-19, 2026-07-13)
 
-## TL;DR (sesi-15 — **D2 ACHIEVED: usable Droidian phone**)
+## TL;DR (sesi-19 — **D2 ACHIEVED: usable Droidian phone**)
 **Phosh boots to a working desktop.** Confirmed on-device by the user (photo/fastfetch):
 `Kernel 4.9.191-samsung-r7`, `DE: Phosh (GNOME)`, `WM: phoc (Wayland)`, `GPU: ARM Mali-G72`,
 1080×24xx display. **Working: display + touchscreen, Phosh shell, PIN login (`1234`),
 WiFi, Settings, charging (battery reads, 100%), display scaling, on-screen keyboard,
-terminal on-device, AUDIO (speaker, sesi-17), **VIDEO HW-DECODE (sesi-18)**.** Stable. Boots straight to Phosh
-(`default-target = graphical.target`).
+terminal on-device, AUDIO (speaker, sesi-17), VIDEO HW-DECODE (sesi-18), **YouTube 1080p60
+in Chromium (sesi-19, SW decode, smooth on stock scaling)**.** Stable. Boots straight to
+Phosh (`default-target = graphical.target`).
 
-### Sesi-18 — HW video decode (YouTube) — **RESUME HERE for the video thread**
+### Sesi-19 — Chromium YouTube 1080p60 SOLVED — **current video-thread state**
+**Goal:** 1080p60 YouTube in the browser without stutter (downstream kernel). **Outcome:
+SOLVED on stock frequency scaling** — recipe + measurements in `device-r7/video/README.md`:
+- ✅ **YouTube ambient mode + annotations OFF** (biggest fix — ambient = per-frame blur canvas).
+- ✅ **enhanced-h264ify: block VP9+AV1, do NOT block 60fps** → `avc1` at all resolutions
+  (YT's VP9-at-720p60 made 720p60 stutter *worse* than 1080p60: Chromium's libvpx < its
+  ffmpeg-H.264 path). Manual options — see `device-r7/video/README.md`.
+- ✅ Measured: SW decode H.264 1080p60 = 2.4× realtime, VP9 = 3.6×; Chromium composites on
+  Mali-G72 (hybris ANGLE); freq pinning bracket-tested → **not needed when cool** (floors
+  for hot conditions archived in the video README).
+- ⚠️ Cost = heat (~51°C SoC after an hour of SW decode). Sesi-18's "Chromium 1080p60
+  reboots the phone" did NOT reproduce; worst case = phoc restart on abrupt fullscreen
+  teardown (self-recovers).
+- 🧹 **Housekeeping:** `youtube-hw` launcher, Video Boost toggle, SMPlayer + VacuumTube
+  flatpaks all REMOVED from device (Chromium is the YouTube path; Clapper stays for local
+  files). VA-API / native-V4L2 ruled out on the 4.9 kernel (see PROGRESS.md sesi-19).
+
+### Sesi-18 — HW video decode (YouTube) — *(historical; superseded by sesi-19 above)*
 **Goal:** smooth YouTube. **Outcome: SOLVED via native app; in-browser partially solved.**
 - ✅ **`youtube-hw` app** ("YouTube (HW)" in app grid): copy link → tap → **60fps + audio, HW `droidvdec`** (Exynos MFC). User-confirmed smooth. yt-dlp+ffmpeg mux video+audio through a FIFO into Clapper. `/usr/local/bin/youtube-hw` + `.desktop`.
 - ✅ **Key correction:** sesi-16's "GL crash blocks Clapper/HW video" was a **test-harness artifact** (ran over SSH without the session hybris-GL env: `GDK_GL=gles GST_GL_API=gles2 LD_PRELOAD=…libglesshadercache.so`). With that env (or launched from the app grid) HW video just works.
@@ -59,19 +77,14 @@ These live only in the rootfs LV; a rootfs re-image loses them. Only #1 is in th
    ROOT process (root ignores mode+ACL) — no known persistent one, but **the bulletproof fix
    is a KERNEL rebuild disabling the `fimc_is` driver** (nodes never exist). Same rebuild
    should also fix Bluetooth (`af_bluetooth.c:69` BUG_ON). Sesi-15b.
-8. **HW-video launcher + browser palliatives** (sesi-18, all in `device-r7/video/`):
-   `apt install wl-clipboard ffmpeg`; `youtube-hw` (720p60+audio HW via FIFO mux) →
-   `/usr/local/bin/`; `youtube-hw.desktop` →
-   `/usr/local/share/applications/`; `firefox/zzz-r7-youtube-h264.js` →
-   `/usr/lib/firefox/defaults/pref/`; enhanced-h264ify in `/etc/firefox/policies/policies.json`
-   (backup `policies.json.orig-r7`); `chromium/h264ify.json` →
-   `/etc/chromium/policies/managed/`; **`webkit/r7-webkit-egl.conf` → `/etc/tmpfiles.d/`**
-   (`systemd-tmpfiles --create` — the unversioned `libEGL.so`/`libGLESv2.so` symlinks that
-   let **Epiphany do in-browser HARDWARE video** via WebKitGTK→GStreamer→droidvdec).
-   ⚠ **Chromium/Firefox video is fragile** — 1080p60 in Chromium
-   crashed the GPU/session and REBOOTED the phone (sesi-18). Firefox = broken for video
-   (Mali/GL). The reliable smooth+safe path is the **HW app (Clapper via `youtube-hw`)**. See
-   `device-r7/video/README.md`.
+8. **Video (sesi-18/19, current state in `device-r7/video/README.md` — follow THAT list):
+   `chromium/h264ify.json` → `/etc/chromium/policies/managed/` + manual extension options
+   (**block VP9+AV1, NOT 60fps**); `webkit/r7-webkit-egl.conf` → `/etc/tmpfiles.d/`
+   (`systemd-tmpfiles --create` — unversioned `libEGL.so`/`libGLESv2.so` symlinks so
+   Epiphany HW-decodes plain HTML5 `<video>`); YouTube player: ambient mode + annotations
+   OFF (per-account). The sesi-18 `youtube-hw` launcher + Firefox h264ify policies were
+   REMOVED in sesi-19 housekeeping (obsoleted by smooth Chromium 1080p60; `youtube-hw`
+   recoverable from git `30638f1`).**
 **TODO (make reproducible):** bake #2–#5 + #8 into a Droidian adaptation `.deb` / first-boot
 hook, or into the rootfs image build. See PROGRESS.md TASK 3.x / adaptation package.
 
@@ -115,9 +128,11 @@ hook, or into the rootfs image build. See PROGRESS.md TASK 3.x / adaptation pack
   accel disabled on Mali) — but **Epiphany (WebKitGTK) CAN** (WebKit decodes `<video>` via
   GStreamer→droidvdec): fixed by adding the missing unversioned `libEGL.so`/`libGLESv2.so`
   symlinks (`device-r7/video/webkit/r7-webkit-egl.conf` → `/etc/tmpfiles.d/`) — WebKit dlopen'd
-  them but Droidian ships only the versioned glvnd libs. Shipped: `device-r7/video/` = `youtube-hw`
-  launcher (yt-dlp → Clapper, app-grid "YouTube (HW)") + Epiphany in-browser HW video + browser
-  H.264 palliatives.
+  them but Droidian ships only the versioned glvnd libs.
+  **Sesi-19 update:** browser YouTube no longer needs the HW decoder — Chromium plays
+  **1080p60 smooth with SW decode on stock scaling** (ambient mode off + h264ify codec lock);
+  the sesi-18 `youtube-hw` launcher was removed in housekeeping (Clapper itself stays for
+  local files). VA-API / native V4L2 on the 4.9 kernel = ruled out (PROGRESS.md sesi-19).
   Full writeup: `device-r7/video/README.md` + `docs/hw-video-decode.md`.
 - **Audio: WORKS (speaker output confirmed on-device, auto-up on cold boot ~28s) — FIXED sesi-17.**
   Two-part fix (both persistent, in repo `device-r7/audio/`):
