@@ -1,0 +1,62 @@
+#!/bin/bash
+# r7 3.5mm jack router — mixer-level workaround.
+# PA port switching never reaches the Samsung HAL (routing params die in the
+# droid-hidl/hidl_compat chain, see PROGRESS.md sesi-20), so the HAL re-applies
+# media-speaker on every stream open. This daemon mirrors the physical jack
+# state into the codec mixer and re-asserts it whenever the HAL (or anything
+# else) changes the mixer.
+CARD=0
+JACK_STATE=/sys/class/switch/h2w/state
+
+# The TAS2562 amp switches only gate at amp power-on, so flipping them after
+# the HAL's stream-open write does nothing. The reliable mute is starving the
+# amp's data feed: the HAL routes it SIFS1->UAIF1 (separate from the codec's
+# SIFS0->UAIF0), so cutting UAIF1 kills the speaker without touching the
+# headphone. Expect a brief speaker blip at stream start while we re-assert.
+apply_headphone() {
+	amixer -q -c $CARD cset name='ABOX UAIF1 SPK' RESERVED
+	amixer -q -c $CARD cset name='Stereo1 DAC MIXL DAC L1 Switch' 1
+	amixer -q -c $CARD cset name='Stereo1 DAC MIXR DAC R1 Switch' 1
+	amixer -q -c $CARD cset name='DAC1 Playback Volume' 168,168
+	amixer -q -c $CARD cset name='Headphone Playback Volume' 14,14
+	amixer -q -c $CARD cset name='HPO Playback Switch' 1
+	amixer -q -c $CARD cset name='HEADPHONE Switch' 1
+}
+
+apply_speaker() {
+	amixer -q -c $CARD cset name='HEADPHONE Switch' 0
+	amixer -q -c $CARD cset name='HPO Playback Switch' 0
+	amixer -q -c $CARD cset name='ABOX UAIF1 SPK' SIFS1
+}
+
+sync_state() {
+	if [ "$(cat "$JACK_STATE" 2>/dev/null)" != "0" ]; then
+		apply_headphone
+	else
+		apply_speaker
+	fi
+}
+
+sync_state
+LAST_JACK="$(cat "$JACK_STATE" 2>/dev/null)"
+
+# alsactl monitor emits a line per mixer change; ALSA only fires events on
+# actual value changes, so re-asserting identical values converges instead of
+# looping. Jack plug/unplug does NOT generate mixer events, so the read also
+# times out every 2s to pick up jack state changes.
+alsactl monitor hw:$CARD 2>/dev/null | while :; do
+	read -r -t 2 _
+	rc=$?
+	if [ $rc -eq 0 ]; then          # mixer event (HAL re-applied its path)
+		sleep 0.1
+		sync_state
+	elif [ $rc -gt 128 ]; then      # timeout tick: re-sync only on jack change
+		jack="$(cat "$JACK_STATE" 2>/dev/null)"
+		if [ "$jack" != "$LAST_JACK" ]; then
+			LAST_JACK="$jack"
+			sync_state
+		fi
+	else
+		break                       # pipe EOF; systemd restarts us
+	fi
+done

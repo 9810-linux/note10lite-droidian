@@ -1,0 +1,11 @@
+[Unit]
+Description=r7 3.5mm jack router (mixer-level; PA->HAL routing is broken, see PROGRESS.md sesi-20)
+After=sound.target
+
+[Service]
+ExecStart=/usr/local/bin/r7-jack-router
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target
