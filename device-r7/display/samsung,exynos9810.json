@@ -1,0 +1,13 @@
+{
+  "name": "Samsung Galaxy Note10 Lite",
+  "x-res": 1080,
+  "y-res": 2400,
+  "width": 70,
+  "height": 155,
+  "cutouts": [
+    {
+      "name": "punch-hole",
+      "path": "M 490 60 A 50 50 0 1 0 590 60 A 50 50 0 1 0 490 60 Z"
+    }
+  ]
+}
