@@ -1,4 +1,24 @@
-# Droidian boot status — SM-N770F (r7) — RESUME HERE (sesi-19, 2026-07-13)
+# Droidian boot status — SM-N770F (r7) — RESUME HERE (sesi-20, 2026-07-18)
+
+### Sesi-20 — **WAYDROID WORKS** (Android-in-container, LineageOS homescreen user-confirmed)
+Three kernel bugs fixed across 4 build+flash cycles (podman clang-9 → `wrap_droidian.sh` →
+SSH-dd, all md5 read-back verified). Kernel on device = branch `droidian-r7` @ `88323bf90`:
+1. `CONFIG_BRIDGE=y` + `CONFIG_VETH=y` (`856ffe866`) — waydroid-net bridge/veth (sesi-19 diagnosis).
+2. `CONFIG_NETFILTER_XT_TARGET_CHECKSUM=y` (`57fbcf609`) — waydroid-net's mangle CHECKSUM DHCP rule.
+3. **fimc-is2 querycap panic fix** (`4c225c879`) — ixs/vra cast `video_drvdata()` to the wrong
+   struct → garbage deref → **kernel panic + reboot loop** whenever Waydroid's `ExtCamHotPlug`
+   scanned `/dev/video*` (also fixed a host landmine: any V4L2 enumeration panicked the phone).
+   Panic read from `/proc/last_kmsg` (pstore is empty on this device; SSH `dmesg -w` dies at panic).
+4. **Mali kbase pid-namespace fix** (`88323bf90`) — `find_get_pid(global tgid)` fails inside
+   Waydroid's pid-ns → -ESRCH → no GPU context → `eglInitialize` fails → composer crash-loop,
+   no UI. Fixed with `get_pid(task_tgid(current))`. Host Android container unaffected.
+Result: session+container RUNNING, `waydroid0` 192.168.240.1/24, `sys.boot_completed=1`,
+LineageOS homescreen shows. **Open:** (a) GAPPS — Droidian image is VANILLA-only; MindTheGapps
+via `casualsnek/waydroid_script` into `/var/lib/waydroid/overlay` was running at session end —
+VERIFY Play Store, then register android_id (google.com/android/uncertified) for Google login.
+(b) USB gadget flapping while Waydroid runs (host hears plug/unplug loop; charging icon glitch)
+— suspect container `usbd`; tried `persist.sys.usb.config=none` in `waydroid_base.prop`, UNVERIFIED.
+Full detail: PROGRESS.md sesi-20.
 
 ## TL;DR (sesi-19 — **D2 ACHIEVED: usable Droidian phone**)
 **Phosh boots to a working desktop.** Confirmed on-device by the user (photo/fastfetch):
