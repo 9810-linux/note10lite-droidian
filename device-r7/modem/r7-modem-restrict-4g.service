@@ -1,0 +1,20 @@
+[Unit]
+Description=r7: restrict cellular modem to 4G (no 5G/NR) - avoids Shannon 360 pref-mode retry loop
+After=ModemManager.service
+Wants=ModemManager.service
+# ModemManager keeps allowed-modes in RAM only: ANY restart of it silently
+# reverts to "2g|3g|4g|5g, preferred 5g", which strands the modem on 2G (it
+# keeps trying to negotiate NR the Shannon 360 cannot do) and restarts the
+# retry storm that eventually spins rild. WantedBy alone is not enough --
+# with RemainAfterExit this unit stays "active (exited)" from boot, so a
+# later MM restart does not re-trigger it. PartOf makes it stop+start
+# together with MM, re-applying the restriction every time.
+PartOf=ModemManager.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/local/bin/r7-modem-restrict-4g.sh
+
+[Install]
+WantedBy=ModemManager.service

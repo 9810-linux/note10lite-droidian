@@ -1,0 +1,14 @@
+[Unit]
+Description=r7: wait for oFono to read the SIM before ModemManager probes it
+After=ofono.service
+Wants=ofono.service
+Before=ModemManager.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/local/bin/r7-wait-ofono-sim.sh
+TimeoutStartSec=90
+
+[Install]
+WantedBy=multi-user.target
