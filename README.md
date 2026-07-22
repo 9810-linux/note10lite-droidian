@@ -21,8 +21,10 @@ display scaling · on-screen keyboard · on-device terminal · **audio (speaker 
 Waydroid** — currently the only camera path — and the YouTube app plays 1080p60
 with HW decode, smoother than the browser) ·
 **mobile data / telephony** (ofono-binder-plugin + ofono2mm + ModemManager;
-SIM detect, LTE registration, mobile data all confirmed working, incl. auto-recovery
-of a boot-order race that showed as "SIM not detected", `device-r7/modem/`) ·
+SIM detect, LTE registration, mobile data all confirmed working on an unattended
+clean boot — needs a startup gate that holds ModemManager until ofono has actually
+enumerated the SIM, or the modem latches `sim-missing` forever, plus a 4G-only
+restriction and an RSRP-corrected signal scale, all in `device-r7/modem/`) ·
 **Software store / flatpak installs** (flathub; confirmed with a 1.4 GB ONLYOFFICE
 install via the UI — note gnome-software says "Pending installation" with no
 progress bar while it downloads, cosmetic only) ·
@@ -40,7 +42,8 @@ GPU context creation inside the container (`88323bf90`).
 - **Native (Droidian-side) camera** — no libcamera path; the old `QUERYCAP` kernel panic is **fixed** (`4c225c879`), and the camera works via Waydroid's Android HAL.
 - **PulseAudio → Samsung HAL routing/volume parameters never arrive** (dies in the droid-hidl/HIDL-shim chain) — output selection in GNOME Settings is empty and max speaker volume trails stock Android; the 3.5mm jack works via the mixer-level `r7-jack-router` daemon instead (sub-second speaker blip at stream start is a known quirk).
 - **Browsers can't reach the HW video decoder** (no VA-API/usable V4L2 on the 4.9 kernel) — browser video is SW-decoded; runs hot on long sessions. Epiphany crashes on YouTube (WebKit MSE). The Waydroid YouTube app is the HW-decode path.
-- **Cellular signal quality reads low (~7%) compared to real reception** (data itself works fine) — was stuck at ~1% forever until `device-r7/modem/` fixed a 5G/NR retry-storm bug (4G-only modem hardware kept getting asked to negotiate NR). That fix also appears to have resolved a related `rild` CPU-spin bug (a broken `/dev/drb` poll loop, ~100% of one core) as a side effect — worth re-checking after some real-world uptime, see `device-r7/modem/README.md`.
+- **GPS works on stock Android but is broken inside Waydroid** — so the BCM4773 and its antenna are fine; the gap is container-side. Untested hypothesis: the vendor GNSS daemon and GNSS HAL never start in the container, the same way `vendor.audio-hal` doesn't (Android `init` skips vendor services whose `.rc` has no `interface` lines) — Maps still half-working fits a Play-Services network-location fallback. Needs a live session to confirm; see the tracker row in `PROGRESS.md`.
+- **Fingerprint reader — not working, and the Settings menu doesn't mean it is** (that's Droidian's `fpd` UI, which shows up with or without a HAL behind it). Touching the reader spot with the screen off *does* wake the phone, but that's the touch controller still reporting its low-power fingerprint region, not the optical sensor (`etspi`/`et7xx`) responding — no illumination, no capture. Unverified beyond that.
 
 ## Layout
 | Path | What |
