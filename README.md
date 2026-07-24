@@ -5,9 +5,13 @@
 This repo holds the **port documentation and device adaptation** (scripts, service
 units, config), not the rootfs image.
 
-> **Status: D2 — usable phone, now with Android app support.** Phosh boots to a
-> working desktop on `4.9.191-samsung-r7`, confirmed on-device. Stable, boots
-> straight to Phosh. **Waydroid runs LineageOS 20 with Play Store** (sesi-20).
+> **Status: D2 — daily-usable phone with Android apps and mobile data.** Phosh
+> boots straight to a working desktop, confirmed on-device and stable.
+> **Waydroid runs LineageOS 20 with Play Store** (sesi-20), **mobile data and LTE
+> work** on an unattended clean boot (sesi-21/22), and **flatpak apps launch**
+> after a kernel `statx()` backport (sesi-22). D2 is still short of complete
+> because **Bluetooth panics** and stays masked; calls and SMS (D3) have not been
+> verified yet. Latest field reports are sesi-23 — see [`PROGRESS.md`](PROGRESS.md).
 
 ## What works
 Display · touchscreen · Phosh shell · PIN login · WiFi · Settings · charging ·
@@ -25,17 +29,30 @@ SIM detect, LTE registration, mobile data all confirmed working on an unattended
 clean boot — needs a startup gate that holds ModemManager until ofono has actually
 enumerated the SIM, or the modem latches `sim-missing` forever, plus a 4G-only
 restriction and an RSRP-corrected signal scale, all in `device-r7/modem/`) ·
-**Software store / flatpak installs** (flathub; confirmed with a 1.4 GB ONLYOFFICE
+**Software store + flatpak apps** (flathub; confirmed with a 1.4 GB ONLYOFFICE
 install via the UI — note gnome-software says "Pending installation" with no
-progress bar while it downloads, cosmetic only) ·
+progress bar while it downloads, cosmetic only. Launching any flatpak needed a
+kernel `statx()` backport, see below) ·
 **Portfolio & Python GTK4 apps** (crash on GL renderer via libhybris EGL; per-app
 `GSK_RENDERER=cairo` desktop override, `device-r7/apps/`).
 
-Waydroid needed three kernel fixes (branch `droidian-r7`): `BRIDGE`/`VETH` +
-`NETFILTER_XT_TARGET_CHECKSUM` for `waydroid-net` (`856ffe866`, `57fbcf609`),
-a **fimc-is2 `querycap` wrong-struct deref** that kernel-panicked the phone on any
-V4L2 `QUERYCAP` (`4c225c879`), and a **Mali kbase pid-namespace bug** that broke
-GPU context creation inside the container (`88323bf90`).
+## Kernel fixes this port needed
+All on branch [`droidian-r7`](https://github.com/9810-linux/android_kernel_samsung_n770f/tree/droidian-r7).
+
+For **Waydroid**: `BRIDGE`/`VETH` + `NETFILTER_XT_TARGET_CHECKSUM` for
+`waydroid-net` (`856ffe866`, `57fbcf609`), a **fimc-is2 `querycap` wrong-struct
+deref** that kernel-panicked the phone on any V4L2 `QUERYCAP` (`4c225c879`), and a
+**Mali kbase pid-namespace bug** that broke GPU context creation inside the
+container (`88323bf90`).
+
+For **flatpak**: a **`statx()` backport** (`fc2e752fa`). Without it *no* flatpak
+app could start at all — `statx()` landed upstream in 4.11 and this tree is 4.9,
+so every app died on `statx(): Function not implemented`. The backport adds the
+upstream `struct statx`, `SYSCALL_DEFINE5(statx)` on arm64 slot 291 and
+arm32-compat slot 397 (the compat slot also helps 32-bit Waydroid apps), and
+**`STATX_MNT_ID`** — reporting only `STATX_BASIC_STATS` wasn't enough, flatpak
+asks for the mount ID too. `STATX_MNT_ID_UNIQUE` (6.8) is deliberately *not*
+faked: flatpak runs fine on 6.1 kernels without it.
 
 ## Known-broken (expected)
 - **Bluetooth** — `af_bluetooth.c:69` `BUG_ON` panic; masked in userspace (kernel-rebuild fix pending).
@@ -59,13 +76,16 @@ GPU context creation inside the container (`88323bf90`).
 
 ## Re-apply after a rootfs reflash
 Several fixes live only in the rootfs LV (bluetooth mask, `panic_on_oops=0`,
-camera-block udev rule, HW-video launcher). Only the kernel defconfig change is in
-the kernel repo. The exact re-apply list is in **`BOOT-STATUS.md`** (the
-"RE-APPLY IF ROOTFS REFLASHED" section) and `device-r7/*/README.md`.
+camera-block udev rule, gstreamer V4L2 plugin disabled, display scale, and
+`graphical.target` as default). Only the kernel defconfig change is in the kernel
+repo. The exact re-apply list is in **`BOOT-STATUS.md`** (the "RE-APPLY IF ROOTFS
+REFLASHED" section) and `device-r7/*/README.md`.
 
 ## Related
 - Kernel source (the `droidian-r7` branch that boots this): **[9810-linux/android_kernel_samsung_n770f](https://github.com/9810-linux/android_kernel_samsung_n770f)**
-- Mainline kernel effort (WIP): **[9810-linux/note10lite-r7-mainline](https://github.com/9810-linux/note10lite-r7-mainline)**
+- Mainline kernel effort (WIP) — port workspace: **[9810-linux/note10lite-r7-mainline](https://github.com/9810-linux/note10lite-r7-mainline)**,
+  kernel branch: **[9810-linux/linux-exynos9810 `exynos9810-r7`](https://github.com/9810-linux/linux-exynos9810/tree/exynos9810-r7)**
+  (Exynos 9810 CMU clock driver, UART earlycon, CPU-topology fix, r7 board DTS)
 
 ## Authorship and license
 This port — the device adaptation, the flashing and recovery tooling, the D0
