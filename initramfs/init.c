@@ -1,5 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
+// SPDX-License-Identifier: GPL-2.0-only
 /*
+ * Copyright (C) 2026 Zulfikar Aji Kusworo (zakusworo) <greataji13@gmail.com>
+ *
  * Droidian/Halium D0 bring-up /init for the r7 (Samsung Galaxy Note 10 Lite,
  * SM-N770F, Exynos 9810) downstream 4.9 kernel — SCREEN-FIRST observation.
  *

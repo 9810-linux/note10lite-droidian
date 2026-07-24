@@ -1,4 +1,6 @@
 #!/bin/bash
+# SPDX-License-Identifier: GPL-2.0-only
+# Copyright (C) 2026 Zulfikar Aji Kusworo (zakusworo) <greataji13@gmail.com>
 # r7 3.5mm jack router — mixer-level workaround.
 # PA port switching never reaches the Samsung HAL (routing params die in the
 # droid-hidl/hidl_compat chain, see PROGRESS.md sesi-20), so the HAL re-applies

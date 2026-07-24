@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+# Copyright (C) 2026 Zulfikar Aji Kusworo (zakusworo) <greataji13@gmail.com>
 # wrap_droidian.sh — package the Droidian/Halium r7 boot image for Samsung S-Boot.
 #
 # Droidian boots via the STOCK S-Boot path (NOT uniLoader): boot.img = downstream

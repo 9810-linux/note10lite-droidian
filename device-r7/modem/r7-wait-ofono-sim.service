@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: GPL-2.0-only
+# Copyright (C) 2026 Zulfikar Aji Kusworo (zakusworo) <greataji13@gmail.com>
+
 [Unit]
 Description=r7: wait for oFono to read the SIM before ModemManager probes it
 After=ofono.service

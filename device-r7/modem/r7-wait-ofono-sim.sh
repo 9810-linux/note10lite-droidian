@@ -1,4 +1,6 @@
 #!/bin/sh
+# SPDX-License-Identifier: GPL-2.0-only
+# Copyright (C) 2026 Zulfikar Aji Kusworo (zakusworo) <greataji13@gmail.com>
 # r7: hold ModemManager (= ofono2mm) until oFono has actually read the SIM.
 #
 # "Started ofono.service" only means ofono took its D-Bus name — on this device

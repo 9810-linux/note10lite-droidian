@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+# Copyright (C) 2026 Zulfikar Aji Kusworo (zakusworo) <greataji13@gmail.com>
 # pre-flash-check.sh — GATE before flashing boot-droidian.img. Fails loud if any
 # safety precondition is missing, so you never flash without a known-good
 # restore path, a valid image, and the right device/partition setup.

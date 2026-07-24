@@ -66,3 +66,20 @@ the kernel repo. The exact re-apply list is in **`BOOT-STATUS.md`** (the
 ## Related
 - Kernel source (the `droidian-r7` branch that boots this): **[9810-linux/android_kernel_samsung_n770f](https://github.com/9810-linux/android_kernel_samsung_n770f)**
 - Mainline kernel effort (WIP): **[9810-linux/note10lite-r7-mainline](https://github.com/9810-linux/note10lite-r7-mainline)**
+
+## Authorship and license
+This port — the device adaptation, the flashing and recovery tooling, the D0
+bring-up initramfs, and the research written up in `PROGRESS.md` — is the
+original work of **Zulfikar Aji Kusworo (`zakusworo`)**
+<greataji13@gmail.com>.
+
+Copyright (C) 2026 Zulfikar Aji Kusworo (zakusworo).
+Licensed **GPL-2.0-only** — see [`LICENSE`](LICENSE) and [`AUTHORS`](AUTHORS).
+
+Kernels built from the r7 defconfigs carry the same signature in their version
+string (`4.9.191-samsung-r7-zakusworo`, via `CONFIG_LOCALVERSION`), so a device
+running this port reports its author in `uname -r`.
+
+Forks and derivatives are welcome under the GPL. It requires you to keep the
+copyright notices intact, state your changes, and release your derivative under
+the same license — please also credit the original port and link back here.

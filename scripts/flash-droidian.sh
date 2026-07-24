@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+# Copyright (C) 2026 Zulfikar Aji Kusworo (zakusworo) <greataji13@gmail.com>
 # flash-droidian.sh — orchestrated, fail-safe first flash of boot-droidian.img.
 #
 # Implements the flash-test-observe-restore protocol from docs/safety-unbrick.md:

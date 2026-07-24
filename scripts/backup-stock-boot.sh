@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+# Copyright (C) 2026 Zulfikar Aji Kusworo (zakusworo) <greataji13@gmail.com>
 # backup-stock-boot.sh — back up the CURRENT BOOT partition before the first
 # Droidian flash, creating the local restore source for this track.
 #

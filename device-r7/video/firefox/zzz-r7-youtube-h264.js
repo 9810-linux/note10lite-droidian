@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-2.0-only
+// Copyright (C) 2026 Zulfikar Aji Kusworo (zakusworo) <greataji13@gmail.com>
+
 // r7 palliative — force YouTube (and other MSE sites) to H.264/AVC.
 //
 // Firefox on this device is SOFTWARE-decode only: droidian-quirks-hybris-gl sets

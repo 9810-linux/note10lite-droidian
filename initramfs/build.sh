@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+# Copyright (C) 2026 Zulfikar Aji Kusworo (zakusworo) <greataji13@gmail.com>
 # build.sh — build the Droidian r7 D0 bring-up initramfs.
 #
 # /init is freestanding (raw aarch64 syscalls, no libc) because the host's

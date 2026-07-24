@@ -1,4 +1,6 @@
 #!/bin/bash
+# SPDX-License-Identifier: GPL-2.0-only
+# Copyright (C) 2026 Zulfikar Aji Kusworo (zakusworo) <greataji13@gmail.com>
 # r7: start the 32-bit vendor.audio-hal in the Android container so it registers
 # android.hardware.audio@5.0::IDevicesFactory/default. Init does NOT start it on
 # its own: stock /vendor/etc/init/android.hardware.audio.service.rc has no

@@ -1,0 +1,65 @@
+Authors and copyright holders of note10lite-droidian
+====================================================
+
+This repository — the Droidian/Halium port of the Samsung Galaxy Note 10 Lite
+(SM-N770F, codename r7, Exynos 9810) — is the original work of:
+
+    Zulfikar Aji Kusworo (zakusworo) <greataji13@gmail.com>
+        Port lead and sole author.
+        Device adaptation (device-r7/), flashing and recovery tooling
+        (scripts/, boot/), the D0 bring-up initramfs (initramfs/), and all
+        port documentation and research notes (PROGRESS.md, BOOT-STATUS.md,
+        docs/, workaround/).
+
+Copyright (C) 2026 Zulfikar Aji Kusworo (zakusworo) <greataji13@gmail.com>
+
+Licensed under the GNU General Public License version 2 only (GPL-2.0-only).
+See LICENSE for the full text.
+
+
+Provenance
+----------
+
+The companion kernel tree carries the same authorship: kernels built from the
+r7 defconfigs identify themselves as
+
+    4.9.191-samsung-r7-zakusworo
+
+via CONFIG_LOCALVERSION in arch/arm64/configs/exynos9810-r7_defconfig and
+arch/arm64/configs/exynos9810-r7_droidian_defconfig, so any device running this
+port reports the author's name in `uname -r`.
+
+Kernel changes authored for this port live on the `droidian-r7` branch of the
+kernel tree and include the Waydroid enablement fixes (BRIDGE/VETH and
+NETFILTER_XT_TARGET_CHECKSUM for waydroid-net, the fimc-is2 QUERYCAP
+wrong-struct dereference that panicked the device on any V4L2 QUERYCAP, and the
+Mali kbase pid-namespace bug that broke GPU context creation inside the
+container), the framebuffer-console bootloop root-cause fix, and the Halium
+debian/ packaging.
+
+
+Third-party material
+--------------------
+
+Files under debug/ are diagnostic dumps captured from the device (kernel logs,
+sec_log, reset reasons). They are vendor output retained as evidence for the
+investigations written up in PROGRESS.md, not authored work, and no copyright
+is claimed over their contents.
+
+initramfs/init.c is written against the Linux kernel userspace ABI and the
+Halium initramfs conventions; it is original code, licensed GPL-2.0-only to
+stay compatible with the kernel lineage it boots.
+
+Upstream projects this port builds on — Droidian, Halium, libhybris, ofono,
+ofono-binder-plugin, ModemManager, Phosh, Waydroid — remain under their own
+licenses and copyrights, held by their respective authors.
+
+
+Reuse
+-----
+
+You are welcome to build on this work; that is what the GPL is for. If you do,
+GPL-2.0-only requires you to keep the copyright notices above intact, state the
+changes you made, and license your derivative work under the same terms. Please
+also keep a visible credit to the original port and a link to
+https://github.com/9810-linux/note10lite-droidian.

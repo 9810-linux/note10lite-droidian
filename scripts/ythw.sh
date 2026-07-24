@@ -1,4 +1,6 @@
 #!/bin/bash
+# SPDX-License-Identifier: GPL-2.0-only
+# Copyright (C) 2026 Zulfikar Aji Kusworo (zakusworo) <greataji13@gmail.com>
 # ythw.sh — HW-decoded YouTube player scaffold for r7 Droidian (sesi-16).
 # scp to the phone and run there:  ./ythw.sh <youtube-url> [1080|720|480]
 #

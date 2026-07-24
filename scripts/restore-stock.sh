@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+# Copyright (C) 2026 Zulfikar Aji Kusworo (zakusworo) <greataji13@gmail.com>
 # restore-stock.sh — EMERGENCY restore of SM-N770F (r7) to stock/Magisk Android.
 #
 # This is the single safety net for "the flashed boot-droidian.img did not boot."

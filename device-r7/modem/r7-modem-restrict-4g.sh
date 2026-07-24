@@ -1,4 +1,6 @@
 #!/bin/sh
+# SPDX-License-Identifier: GPL-2.0-only
+# Copyright (C) 2026 Zulfikar Aji Kusworo (zakusworo) <greataji13@gmail.com>
 # r7: restrict cellular modem to 2G/3G/4G (no 5G/NR). See README.md.
 #
 # NOTE: this script deliberately does NOT restart ModemManager. An earlier
