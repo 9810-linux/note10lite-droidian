@@ -76,9 +76,11 @@ original work of **Zulfikar Aji Kusworo (`zakusworo`)**
 Copyright (C) 2026 Zulfikar Aji Kusworo (zakusworo).
 Licensed **GPL-2.0-only** — see [`LICENSE`](LICENSE) and [`AUTHORS`](AUTHORS).
 
-Kernels built from the r7 defconfigs carry the same signature in their version
-string (`4.9.191-samsung-r7-zakusworo`, via `CONFIG_LOCALVERSION`), so a device
-running this port reports its author in `uname -r`.
+Kernels built from the [`droidian-r7`](https://github.com/9810-linux/android_kernel_samsung_n770f)
+branch carry the same signature: `uname -r` reports
+`4.9.191-samsung-r7-zakusworo`, `/proc/version` reports `(zakusworo@9810-linux)`,
+and `dmesg` names the port in its first lines. Committed 2026-07-25 — a phone
+flashed before then still reports the un-suffixed `4.9.191-samsung-r7`.
 
 Forks and derivatives are welcome under the GPL. It requires you to keep the
 copyright notices intact, state your changes, and release your derivative under

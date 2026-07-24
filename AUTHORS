@@ -20,14 +20,23 @@ See LICENSE for the full text.
 Provenance
 ----------
 
-The companion kernel tree carries the same authorship: kernels built from the
-r7 defconfigs identify themselves as
+The companion kernel tree carries the same authorship. Kernels built from the
+droidian-r7 branch identify themselves as
 
-    4.9.191-samsung-r7-zakusworo
+    uname -r        4.9.191-samsung-r7-zakusworo
+    /proc/version   ... (zakusworo@9810-linux) ...
+    dmesg           Samsung Galaxy Note 10 Lite (SM-N770F, r7)
+                    Droidian/Halium port by zakusworo
 
-via CONFIG_LOCALVERSION in arch/arm64/configs/exynos9810-r7_defconfig and
-arch/arm64/configs/exynos9810-r7_droidian_defconfig, so any device running this
-port reports the author's name in `uname -r`.
+For the packaged (Droidian) build the release string comes from DEVICE_MODEL in
+debian/kernel-info.mk, not from CONFIG_LOCALVERSION: linux-packaging-snippets
+composes KERNEL_RELEASE from DEVICE_VENDOR/DEVICE_MODEL and passes it as
+KERNELRELEASE=, which overrides the defconfig value. CONFIG_LOCALVERSION in
+arch/arm64/configs/exynos9810-r7_defconfig and exynos9810-r7_droidian_defconfig
+covers the plain `make <defconfig> && make` path instead.
+
+Both were committed to the kernel tree on 2026-07-25. Kernels flashed before
+that date report the un-suffixed 4.9.191-samsung-r7 and predate this notice.
 
 Kernel changes authored for this port live on the `droidian-r7` branch of the
 kernel tree and include the Waydroid enablement fixes (BRIDGE/VETH and
